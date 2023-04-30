@@ -366,7 +366,6 @@ int is_file_named(struct lsof_context *ctx, /* context */
 
 char *print_dev(struct lfile *lf, /* file whose device to be printed */
                 dev_t *dev)       /* pointer to device to be printed */
-
 {
     static char buf[128];
     int maj = GET_MAJ_DEV(*dev);

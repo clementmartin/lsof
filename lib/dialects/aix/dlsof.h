@@ -272,12 +272,8 @@ typedef u_longlong_t KA_T;
  */
 
 #    if AIXV >= 4140
-#        define DCACHE_CLONE                                                   \
-            rw_clone_sect /* clone function for read_dcache                    \
-                           */
-#        define DCACHE_CLONE                                                   \
-            rw_clone_sect /* clone function for read_dcache                    \
-                           */
+#        define DCACHE_CLONE rw_clone_sect /* clone function for read_dcache   \
+                                            */
 #        define DCACHE_CLR                                                     \
             clr_sect /* function to clear clone and                            \
                       * pseudo caches when reading the                         \
