@@ -740,7 +740,7 @@ void process_pts(struct lsof_context *ctx, struct kinfo_file *kf) {
      */
     Lf->dev = DevDev;
     Lf->inode = (INODETYPE)kf->kf_un.kf_pts.kf_pts_dev;
-    Lf->inp_ty = Lf->dev_def = Lf->rdev_def = 1;
+    Lf->inode_def = Lf->dev_def = Lf->rdev_def = 1;
     Lf->ntype = N_CHR;
     Lf->rdev = kf->kf_un.kf_pts.kf_pts_dev;
     DCunsafe = 1;
