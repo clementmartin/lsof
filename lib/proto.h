@@ -192,7 +192,7 @@ extern char *printuid(UID_ARG uid, int *ty);
 extern void printunkaf(struct lsof_context *ctx, int fam, int ty);
 extern char print_access(enum lsof_file_access_mode access);
 extern char print_lock(enum lsof_lock_mode lock);
-extern void print_file_type(enum lsof_file_type type,
+extern void file_type_to_string(enum lsof_file_type type,
                             uint32_t unknown_file_type_number, char *buf,
                             size_t buf_len);
 extern void print_iproto(enum lsof_protocol proto,

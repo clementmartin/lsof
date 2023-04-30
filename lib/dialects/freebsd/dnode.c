@@ -160,8 +160,9 @@ static void get_lock_state_kvm(struct lsof_context *ctx, /* context */
  * require a dfile.c, so this is the next best location for the function.
  */
 
-void process_kf_kqueue(struct lsof_context *ctx, struct kinfo_file *kf,
-                       KA_T ka) {
+void process_kf_kqueue(struct lsof_context *ctx, /* context */
+                       struct kinfo_file *kf,    /* kernel file */
+                       KA_T ka /* kernel address */) {
 #    if __FreeBSD_version < 1400062
     struct kqueue kq; /* kqueue structure */
 #    endif            /* __FreeBSD_version < 1400062 */
@@ -197,7 +198,7 @@ void process_eventfd(struct lsof_context *ctx, struct kinfo_file *kf) {
 #endif /* defined(KF_TYPE_EVENTFD) */
 
 void process_shm(struct lsof_context *ctx, struct kinfo_file *kf) {
-    Lf->type = LSOF_FILE_POSIX_SHM;
+    Lf->type = LSOF_FILE_SHM;
     Lf->sz = kf->kf_un.kf_file.kf_file_size;
     Lf->sz_def = 1;
     Lf->off_def = 0;
@@ -228,7 +229,7 @@ static enum lsof_file_type parse_proc_path(struct kinfo_file *kf,
     enum lsof_file_type ty;
     char *basename;
 
-    ty = LSOF_FILE_UNKNOWN;
+    ty = LSOF_FILE_NONE;
     basename = strrchr(kf->kf_path, '/');
     if (basename) {
         ++basename;
@@ -259,7 +260,7 @@ static enum lsof_file_type parse_proc_path(struct kinfo_file *kf,
              * /proc/<pid> or /proc itself */
             ty = LSOF_FILE_PROC_DIR;
         }
-        if (ty && ty != LSOF_FILE_PROC_DIR) {
+        if (ty != LSOF_FILE_NONE && ty != LSOF_FILE_PROC_DIR) {
             char *parent_dir;
             --basename;
             *basename = '\0';
@@ -281,7 +282,6 @@ void process_vnode(struct lsof_context *ctx, struct kinfo_file *kf,
     dev_t dev = 0, rdev = 0;
     unsigned char devs;
     unsigned char rdevs;
-    enum lsof_file_type ty;
     KA_T va;
     struct vnode *v, vb;
     struct l_vfs *vfs;
@@ -473,10 +473,8 @@ process_overlaid_node:
     /*
      * Obtain the file size.
      */
-    Lf->off_def = 1;
     switch (Ntype) {
     case N_FIFO:
-        Lf->off_def = 1;
         break;
     case N_PROC:
         Lf->sz = kf->kf_un.kf_file.kf_file_size;
@@ -495,8 +493,6 @@ process_overlaid_node:
         if (kf_vtype == KF_VTYPE_VREG || kf_vtype == KF_VTYPE_VDIR) {
             Lf->sz = kf->kf_un.kf_file.kf_file_size;
             Lf->sz_def = 1;
-        } else if ((kf_vtype == KF_VTYPE_VCHR || kf_vtype == KF_VTYPE_VBLK)) {
-            Lf->off_def = 1;
         }
         break;
     default:
@@ -544,10 +540,9 @@ process_overlaid_node:
         Lf->type = LSOF_FILE_VNODE_VNON;
         break;
     case KF_VTYPE_VREG:
-        Lf->type = LSOF_FILE_VNODE_VREG;
-        break;
     case KF_VTYPE_VDIR:
-        Lf->type = LSOF_FILE_VNODE_VDIR;
+        Lf->type = (kf_vtype == KF_VTYPE_VREG) ? LSOF_FILE_VNODE_VREG
+                                               : LSOF_FILE_VNODE_VDIR;
         break;
     case KF_VTYPE_VBLK:
         Lf->type = LSOF_FILE_VNODE_VBLK;
@@ -570,9 +565,10 @@ process_overlaid_node:
         Lf->type = LSOF_FILE_VNODE_VFIFO;
         break;
     default:
-        Lf->type = LSOF_FILE_UNKNOWN;
+        Lf->type = LSOF_FILE_UNKNOWN_RAW;
         Lf->unknown_file_type_number = kf_vtype;
     }
+    Lf->ntype = Ntype;
 
     /*
      * Handle some special cases:
@@ -586,10 +582,7 @@ process_overlaid_node:
         (void)snpf(Namech, Namechl, "(revoked)");
 
     else if (Ntype == N_PROC) {
-        ty = parse_proc_path(kf, &proc_pid);
-        if (ty != LSOF_FILE_UNKNOWN) {
-            Lf->type = ty;
-        }
+        Lf->type = parse_proc_path(kf, &proc_pid);
     }
 
 #if defined(HASBLKDEV)
@@ -676,7 +669,6 @@ void process_pipe(struct lsof_context *ctx, struct kinfo_file *kf, KA_T pa) {
     (void)snpf(dev_ch, sizeof(dev_ch), "%s",
                print_kptr(kf->kf_un.kf_pipe.kf_pipe_addr, (char *)NULL, 0));
     enter_dev_ch(ctx, dev_ch);
-    Lf->off_def = 1;
 #if __FreeBSD_version >= 1400062
     Lf->sz = (SZOFFTYPE)kf->kf_un.kf_pipe.kf_pipe_buffer_size;
     Lf->sz_def = 1;
@@ -748,9 +740,8 @@ void process_pts(struct lsof_context *ctx, struct kinfo_file *kf) {
      */
     Lf->dev = DevDev;
     Lf->inode = (INODETYPE)kf->kf_un.kf_pts.kf_pts_dev;
-    Lf->inode_def = Lf->dev_def = Lf->rdev_def = 1;
-    Ntype = N_CHR;
-    Lf->off_def = 1;
+    Lf->inp_ty = Lf->dev_def = Lf->rdev_def = 1;
+    Lf->ntype = N_CHR;
     Lf->rdev = kf->kf_un.kf_pts.kf_pts_dev;
     DCunsafe = 1;
 }

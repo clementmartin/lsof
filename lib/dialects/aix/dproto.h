@@ -45,8 +45,7 @@ extern int readafsnode(struct lsof_context *ctx, KA_T va, struct vnode *v,
 #    endif /* defined(HAS_AFS) */
 
 #    if defined(HAS_JFS2)
-extern int readj2lino(struct lsof_context *ctx, struct gnode *ga,
-                      struct l_ino *li);
+extern int readj2lino(struct lsof_context *ctx, struct gnode *ga, struct l_ino *li);
 #    endif /* defined(HAS_JFS2) */
 
 extern int getchan(char *p);

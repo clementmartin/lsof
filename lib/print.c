@@ -1106,14 +1106,14 @@ char print_lock(enum lsof_lock_mode lock) {
 }
 
 /*
- * print_file_type() - print enum lsof_file_type
+ * file_type_to_string() - convert enum lsof_file_type to string
  */
-void print_file_type(enum lsof_file_type type,
-                     uint32_t unknown_file_type_number, char *buf,
-                     size_t buf_len) {
+void file_type_to_string(enum lsof_file_type type,
+                         uint32_t unknown_file_type_number, char *buf,
+                         size_t buf_len) {
     switch (type) {
     default:
-    case LSOF_FILE_UNKNOWN:
+    case LSOF_FILE_UNKNOWN_RAW:
         (void)snpf(buf, buf_len, "%04o", (unknown_file_type_number & 0xfff));
         break;
     case LSOF_FILE_FIFO:
@@ -1132,9 +1132,9 @@ void print_file_type(enum lsof_file_type type,
         (void)snpf(buf, buf_len, "REG");
         break;
     case LSOF_FILE_LINK:
-        (void)snpf(buf, buf_len, "LNK");
+        (void)snpf(buf, buf_len, "LINK");
         break;
-    /* Use lower case for network-related files except IPv4/IPv6 for
+    /* Use lower case for network-related files except IPv4/IPv6/ATALK for
      * compatibility */
     case LSOF_FILE_SOCKET:
         (void)snpf(buf, buf_len, "sock");
@@ -1164,7 +1164,7 @@ void print_file_type(enum lsof_file_type type,
         (void)snpf(buf, buf_len, "x.25");
         break;
     case LSOF_FILE_APPLETALK:
-        (void)snpf(buf, buf_len, "atalk");
+        (void)snpf(buf, buf_len, "ATALK");
         break;
     case LSOF_FILE_NET_DRIVER:
         (void)snpf(buf, buf_len, "ndrv");
@@ -1218,9 +1218,6 @@ void print_file_type(enum lsof_file_type type,
     case LSOF_FILE_PROC_DIR:
         (void)snpf(buf, buf_len, "PDIR");
         break;
-    case LSOF_FILE_PROC_PID:
-        (void)snpf(buf, buf_len, "PPID");
-        break;
     case LSOF_FILE_PROC_EXEC_TYPE:
         (void)snpf(buf, buf_len, "PETY");
         break;
@@ -1242,6 +1239,12 @@ void print_file_type(enum lsof_file_type type,
     case LSOF_FILE_PROC_GROUP_NOTIFIER:
         (void)snpf(buf, buf_len, "PGID");
         break;
+    case LSOF_FILE_PROC_LWP_CTL:
+        (void)snpf(buf, buf_len, "PLC");
+        break;
+    case LSOF_FILE_PROC_LWP_DIR:
+        (void)snpf(buf, buf_len, "PLDR");
+        break;
     case LSOF_FILE_PROC_LDT:
         (void)snpf(buf, buf_len, "PLDT");
         break;
@@ -1256,12 +1259,6 @@ void print_file_type(enum lsof_file_type type,
         break;
     case LSOF_FILE_PROC_LWP_GWINDOWS:
         (void)snpf(buf, buf_len, "PLWG");
-        break;
-    case LSOF_FILE_PROC_LWP_CTL:
-        (void)snpf(buf, buf_len, "PLC");
-        break;
-    case LSOF_FILE_PROC_LWP_DIR:
-        (void)snpf(buf, buf_len, "PLDR");
         break;
     case LSOF_FILE_PROC_LWP_SINFO:
         (void)snpf(buf, buf_len, "PLWI");
@@ -1376,6 +1373,12 @@ void print_file_type(enum lsof_file_type type,
     case LSOF_FILE_UNKNOWN_PROGRAM_TEXT:
         (void)snpf(buf, buf_len, "UNKNtxt");
         break;
+    case LSOF_FILE_UNKNOWN:
+        (void)snpf(buf, buf_len, "UNKN");
+        break;
+    case LSOF_FILE_UNKNOWN_STAT:
+        (void)snpf(buf, buf_len, "unknown");
+        break;
     case LSOF_FILE_PIPE:
         (void)snpf(buf, buf_len, "PIPE");
         break;
@@ -1439,10 +1442,7 @@ void print_file_type(enum lsof_file_type type,
         (void)snpf(buf, buf_len, "VLNK");
         break;
     case LSOF_FILE_VNODE_VSOCK:
-        (void)snpf(buf, buf_len, "VSOCK");
-        break;
-    case LSOF_FILE_VNODE_VFIFO:
-        (void)snpf(buf, buf_len, "VFIFO");
+        (void)snpf(buf, buf_len, "SOCK");
         break;
     case LSOF_FILE_VNODE_VBAD:
         (void)snpf(buf, buf_len, "VBAD");
@@ -1450,14 +1450,23 @@ void print_file_type(enum lsof_file_type type,
     case LSOF_FILE_VNODE_VMPC:
         (void)snpf(buf, buf_len, "VMPC");
         break;
+    case LSOF_FILE_VNODE_VFIFO:
+        (void)snpf(buf, buf_len, "FIFO");
+        break;
+    case LSOF_FILE_VNODE_VDOOR:
+        (void)snpf(buf, buf_len, "DOOR");
+        break;
+    case LSOF_FILE_VNODE_VPORT:
+        
+        break;
     case LSOF_FILE_VNODE_VUNNAMED:
-        (void)snpf(buf, buf_len, "VUNNM");
+        (void)snpf(buf, buf_len, "UNNM");
         break;
     }
 }
 
 /*
- * print_file_type() - print enum lsof_protocol
+ * print_iproto() - print enum lsof_protocol
  */
 void print_iproto(enum lsof_protocol proto, uint32_t unknown_proto_number,
                   char *buf, size_t buf_len) {

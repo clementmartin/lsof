@@ -162,6 +162,7 @@ static void process_kinfo_file(struct lsof_context *ctx, struct kinfo_file *kf,
                                struct xfile *xfile, struct pcb_lists *pcbs,
                                struct lock_list *locks) {
     Lf->off = kf->kf_offset;
+    Lf->off_def = 1;
     if (kf->kf_ref_count) {
         if ((kf->kf_flags & (KF_FLAG_READ | KF_FLAG_WRITE)) == KF_FLAG_READ)
             Lf->access = LSOF_FILE_ACCESS_READ;
@@ -178,11 +179,9 @@ static void process_kinfo_file(struct lsof_context *ctx, struct kinfo_file *kf,
     if (xfile) {
         Lf->fsa = xfile->xf_file;
         Lf->fsv |= FSV_FA;
-
         Lf->fna = (KA_T)xfile->xf_data;
         Lf->fsv |= FSV_NI;
     }
-
     if (xfile)
         Lf->ffg = (long)xfile->xf_flag;
     else

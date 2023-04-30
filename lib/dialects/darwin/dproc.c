@@ -395,7 +395,7 @@ void gather_proc_info(struct lsof_context *ctx) {
                      */
                     if (cre != ESRCH) {
                         (void)snpf(Namech, Namechl, "%s|%s info error: %s",
-                                   CWD +1, RTD + 1, strerror(cre));
+                                   CWD + 1, RTD + 1, strerror(cre));
                         Namech[Namechl - 1] = '\0';
                         enter_nm(ctx, Namech);
                         if (Lf->sf)
@@ -585,7 +585,6 @@ static void process_fds(struct lsof_context *ctx, /* context */
 /*
  * process_fileports() -- process fileports
  */
-
 static void process_fileports(struct lsof_context *ctx, /* context */
                               int pid,                  /* PID of interest */
                               int ckscko) /* check socket files only */
@@ -704,7 +703,6 @@ static void process_fileports(struct lsof_context *ctx, /* context */
 /*
  * process_text() -- process text information
  */
-
 static void process_text(struct lsof_context *ctx, /* context */
                          int pid)                  /* PID */
 {

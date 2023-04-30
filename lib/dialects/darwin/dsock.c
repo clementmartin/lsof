@@ -74,7 +74,6 @@ static void process_socket_common(struct lsof_context *ctx,
     else
         Lf->sz = (SZOFFTYPE)(si->psi.soi_rcv.sbi_cc + si->psi.soi_snd.sbi_cc);
     Lf->sz_def = 1;
-    Lf->off_def = 1;
 
 #if defined(HASTCPTPIQ)
     /*
@@ -332,7 +331,6 @@ static void process_socket_common(struct lsof_context *ctx,
          * Process a ROUTE domain socket.
          */
         Lf->type = LSOF_FILE_ROUTE;
-        Lf->off_def = 1;
         break;
     case AF_NDRV:
 

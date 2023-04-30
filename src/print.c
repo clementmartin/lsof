@@ -869,12 +869,12 @@ void print_file() {
      * Size or print the type.
      */
     if (!PrPass) {
-        print_file_type(Lf->type, Lf->unknown_file_type_number, type,
+        file_type_to_string(Lf->type, Lf->unknown_file_type_number, type,
                         sizeof(type));
         if ((len = strlen(type)) > TypeColW)
             TypeColW = len;
     } else {
-        print_file_type(Lf->type, Lf->unknown_file_type_number, type,
+        file_type_to_string(Lf->type, Lf->unknown_file_type_number, type,
                         sizeof(type));
         (void)printf(" %*.*s", TypeColW, TypeColW, type);
     }
@@ -1868,7 +1868,7 @@ int print_proc() {
             lc++;
         }
         if (FieldSel[LSOF_FIX_TYPE].st) {
-            print_file_type(Lf->type, Lf->unknown_file_type_number, type,
+            file_type_to_string(Lf->type, Lf->unknown_file_type_number, type,
                             sizeof(type));
             (void)printf("%c%s%c", LSOF_FID_TYPE, type, Terminator);
             lc++;

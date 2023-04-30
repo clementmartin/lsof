@@ -90,7 +90,6 @@ void enter_vnode_info(
     dev_t dev = 0;
     int devs = 0;
     struct mounts *mp;
-
     /*
      * Derive file type.
      */
@@ -124,7 +123,7 @@ void enter_vnode_info(
         Ntype = N_REGLR;
         break;
     default:
-        type = LSOF_FILE_UNKNOWN;
+        type = LSOF_FILE_UNKNOWN_RAW;
         unknown_file_type_number =
             (vip->vip_vi.vi_stat.vst_mode & S_IFMT) >> 12;
         Ntype = N_REGLR;
@@ -134,7 +133,6 @@ void enter_vnode_info(
         Lf->unknown_file_type_number = unknown_file_type_number;
     }
     Lf->ntype = Ntype;
-
     /*
      * Save device number and path
      */
