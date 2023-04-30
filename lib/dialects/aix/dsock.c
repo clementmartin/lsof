@@ -74,7 +74,8 @@ void process_socket(struct lsof_context *ctx, /* context */
     /*
      * Set socket file variables.
      */
-    Lf->type = LSOF_FILE_VNODE_SOCK;
+    Lf->type = LSOF_FILE_SOCKET;
+    Lf->inp_ty = 2;
     /*
      * Read socket and protocol switch structures.
      */
@@ -108,7 +109,6 @@ void process_socket(struct lsof_context *ctx, /* context */
     else
         Lf->sz = (SZOFFTYPE)(s.so_rcv.sb_cc + s.so_snd.sb_cc);
     Lf->sz_def = 1;
-    Lf->off_def = 1;
 
 #if defined(HASTCPTPIQ)
     Lf->lts.rq = s.so_rcv.sb_cc;
@@ -297,7 +297,6 @@ void process_socket(struct lsof_context *ctx, /* context */
             enter_dev_ch(ctx, print_kptr((KA_T)(s.so_pcb), (char *)NULL, 0));
         else
             (void)snpf(Namech, Namechl, "no protocol control block");
-        Lf->off_def = 1;
         break;
         /*
          * Process a Unix domain socket.

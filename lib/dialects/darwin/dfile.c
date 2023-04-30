@@ -85,6 +85,8 @@ void enter_vnode_info(
     struct vnode_info_path *vip) /* pointer to vnode info with path */
 {
     char buf[32];
+    enum lsof_file_type type;
+    uint32_t unknown_file_type_number = 0;
     dev_t dev = 0;
     int devs = 0;
     struct mounts *mp;
@@ -94,38 +96,44 @@ void enter_vnode_info(
      */
     switch ((int)(vip->vip_vi.vi_stat.vst_mode & S_IFMT)) {
     case S_IFIFO:
-        Lf->type = LSOF_FILE_FIFO;
+        type = LSOF_FILE_FIFO;
         Ntype = N_FIFO;
         break;
     case S_IFCHR:
-        Lf->type = LSOF_FILE_CHAR;
+        type = LSOF_FILE_CHAR;
         Ntype = N_CHR;
         break;
     case S_IFDIR:
-        Lf->type = LSOF_FILE_DIR;
+        type = LSOF_FILE_DIR;
         Ntype = N_REGLR;
         break;
     case S_IFBLK:
-        Lf->type = LSOF_FILE_BLOCK;
+        type = LSOF_FILE_BLOCK;
         Ntype = N_BLK;
         break;
 
 #if defined(S_IFLNK)
     case S_IFLNK:
-        Lf->type = LSOF_FILE_LINK;
+        type = LSOF_FILE_LINK;
         Ntype = N_REGLR;
         break;
 #endif /* defined(S_IFLNK) */
 
     case S_IFREG:
-        Lf->type = LSOF_FILE_REGULAR;
+        type = LSOF_FILE_REGULAR;
         Ntype = N_REGLR;
         break;
     default:
-        Lf->type = LSOF_FILE_UNKNOWN;
-        Lf->unknown_file_type_number = vip->vip_vi.vi_stat.vst_mode;
+        type = LSOF_FILE_UNKNOWN;
+        unknown_file_type_number =
+            (vip->vip_vi.vi_stat.vst_mode & S_IFMT) >> 12;
         Ntype = N_REGLR;
     }
+    if (Lf->type == LSOF_FILE_NONE) {
+        Lf->type = type;
+        Lf->unknown_file_type_number = unknown_file_type_number;
+    }
+    Lf->ntype = Ntype;
 
     /*
      * Save device number and path
@@ -181,7 +189,6 @@ void enter_vnode_info(
     switch (Ntype) {
     case N_CHR:
     case N_FIFO:
-        Lf->off_def = 1;
         break;
     default:
         Lf->sz = (SZOFFTYPE)vip->vip_vi.vi_stat.vst_size;
@@ -240,7 +247,6 @@ void err2nm(struct lsof_context *ctx, /* context */
 /*
  * print_v_path() -- print vnode's path
  */
-
 int print_v_path(struct lsof_context *ctx, struct lfile *lf) {
     if (lf->V_path) {
         safestrprt(lf->V_path, stdout, 0);
@@ -252,7 +258,6 @@ int print_v_path(struct lsof_context *ctx, struct lfile *lf) {
 /*
  * process_atalk() -- process an Apple Talk file
  */
-
 void process_atalk(struct lsof_context *ctx, /* context */
                    int pid,                  /* PID */
                    int32_t fd)               /* FD */
@@ -264,7 +269,6 @@ void process_atalk(struct lsof_context *ctx, /* context */
 /*
  * process_fsevents() -- process a file system events file
  */
-
 void process_fsevents(struct lsof_context *ctx, /* context */
                       int pid,                  /* PID */
                       int32_t fd)               /* FD */
@@ -275,7 +279,6 @@ void process_fsevents(struct lsof_context *ctx, /* context */
 /*
  * process_kqueue() -- process a kernel queue file
  */
-
 void process_kqueue(struct lsof_context *ctx, /* context */
                     int pid,                  /* PID */
                     int32_t fd)               /* FD */
@@ -318,7 +321,6 @@ void process_kqueue(struct lsof_context *ctx, /* context */
 /*
  * process_pipe() -- process pipe file
  */
-
 static void process_pipe_common(struct lsof_context *ctx,
                                 struct pipe_fdinfo *pi) {
     char dev_ch[32], *ep;
@@ -334,7 +336,6 @@ static void process_pipe_common(struct lsof_context *ctx,
     /*
      * Enable offset or size reporting.
      */
-    Lf->off_def = 1;
     Lf->sz = (SZOFFTYPE)pi->pipeinfo.pipe_stat.vst_blksize;
     Lf->sz_def = 1;
     /*
@@ -421,7 +422,6 @@ void process_fileport_pipe(struct lsof_context *ctx, /* context */
 /*
  * process_psem() -- process a POSIX semaphore file
  */
-
 void process_psem(struct lsof_context *ctx, /* context */
                   int pid,                  /* PID */
                   int32_t fd)               /* FD */
@@ -429,7 +429,7 @@ void process_psem(struct lsof_context *ctx, /* context */
     int nb;
     struct psem_fdinfo ps;
     /*
-     * Get the sempaphore file information.
+     * Get the semaphore file information.
      */
     Lf->type = LSOF_FILE_POSIX_SEMA;
     nb = proc_pidfdinfo(pid, fd, PROC_PIDFDPSEMINFO, &ps, sizeof(ps));
@@ -460,17 +460,11 @@ void process_psem(struct lsof_context *ctx, /* context */
         (void)snpf(Namech, Namechl, "%s", ps.pseminfo.psem_name);
         enter_nm(ctx, Namech);
     }
-    /*
-     * Unless file size has been specifically requested, enable the printing of
-     * file offset.
-     */
-    Lf->off_def = 1;
 }
 
 /*
  * process_pshm() -- process POSIX shared memory file
  */
-
 static void process_pshm_common(struct lsof_context *ctx,
                                 struct pshm_fdinfo *ps) {
     Lf->type = LSOF_FILE_POSIX_SHM;
@@ -479,8 +473,8 @@ static void process_pshm_common(struct lsof_context *ctx,
      */
     enter_file_info(ctx, &ps->pfi);
     /*
-     * If the POSIX shared memory file has a path name, enter it; otherwise, if
-     * it has a mapping address, enter that.
+     * If the POSIX shared memory file has a path name, enter it; otherwise,
+     * if it has a mapping address, enter that.
      */
     if (ps->pshminfo.pshm_name[0]) {
         ps->pshminfo.pshm_name[sizeof(ps->pshminfo.pshm_name) - 1] = '\0';
@@ -495,7 +489,6 @@ static void process_pshm_common(struct lsof_context *ctx,
     /*
      * Enable offset or size reporting.
      */
-    Lf->off_def = 1;
     Lf->sz = (SZOFFTYPE)ps->pshminfo.pshm_stat.vst_size;
     Lf->sz_def = 1;
 }
@@ -564,7 +557,6 @@ void process_fileport_pshm(struct lsof_context *ctx, /* context */
 /*
  * process_vnode() -- process a vnode file
  */
-
 static void process_vnode_common(struct lsof_context *ctx,
                                  struct vnode_fdinfowithpath *vi) {
     /*
@@ -587,8 +579,8 @@ void process_vnode(struct lsof_context *ctx, /* context */
 
             /*
              * The file descriptor's vnode may have been revoked.  This is a
-             * bit of a hack, since an ENOENT error might not always mean the
-             * descriptor's vnode has been revoked.  As the libproc API
+             * bit of a hack, since an ENOENT error might not always mean
+             * the descriptor's vnode has been revoked.  As the libproc API
              * matures, this code may need to be revisited.
              */
             enter_nm(ctx, "(revoked)");
@@ -626,8 +618,8 @@ void process_fileport_vnode(struct lsof_context *ctx, /* context */
 
             /*
              * The file descriptor's vnode may have been revoked.  This is a
-             * bit of a hack, since an ENOENT error might not always mean the
-             * descriptor's vnode has been revoked.  As the libproc API
+             * bit of a hack, since an ENOENT error might not always mean
+             * the descriptor's vnode has been revoked.  As the libproc API
              * matures, this code may need to be revisited.
              */
             enter_nm(ctx, "(revoked)");

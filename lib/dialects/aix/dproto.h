@@ -45,15 +45,14 @@ extern int readafsnode(struct lsof_context *ctx, KA_T va, struct vnode *v,
 #    endif /* defined(HAS_AFS) */
 
 #    if defined(HAS_JFS2)
-extern int readj2lino(struct gnode *ga, struct l_ino *li);
+extern int readj2lino(struct lsof_context *ctx, struct gnode *ga,
+                      struct l_ino *li);
 #    endif /* defined(HAS_JFS2) */
 
 extern int getchan(char *p);
-extern int is_file_named(struct lsof_context *ctx, char *p, enum vtype ty,
-                         chan_t ch, int ic);
+extern int is_file_named(struct lsof_context *ctx, char *p, enum vtype ty, chan_t ch, int ic);
 extern char isglocked(struct lsof_context *ctx, struct gnode *ga);
-extern int readlino(struct lsof_context *ctx, struct gnode *ga,
-                    struct l_ino *li);
+extern int readlino(struct lsof_context *ctx, struct gnode *ga, struct l_ino *li);
 extern struct l_vfs *readvfs(struct lsof_context *ctx, struct vnode *vn);
 
 #    if AIXV >= 4200

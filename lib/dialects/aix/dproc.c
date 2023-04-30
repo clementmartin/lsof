@@ -28,7 +28,6 @@
  * 4. This notice may not be removed or altered.
  */
 
-#include "lsof.h"
 #ifndef lint
 static char copyright[] =
     "@(#) Copyright 1994 Purdue Research Foundation.\nAll rights reserved.\n";
@@ -1226,8 +1225,7 @@ static void process_text(struct lsof_context *ctx, /* context */
 #    endif /* AIXV<4300 */
 
          ll; ll = (KA_T)le->next) {
-        (void)snpf(fd, sizeof(fd), " L%02d", i);
-        alloc_lfile(ctx, fd, -1);
+        alloc_lfile(ctx, LSOF_FD_LIBRARY_REF, i);
         if (!(le = getle(ctx, ll, sid, &err))) {
             (void)snpf(Namech, Namechl, "loader entry at %s: %s",
                        print_kptr((KA_T)ll, (char *)NULL, 0), err);
@@ -1365,9 +1363,8 @@ static void process_text(pid_t pid) /* process PID */
         /*
          * Allocate space for a file entry.  Set its basic characteristics.
          */
-        (void)snpf(fd, sizeof(fd), "L%02d", i++);
-        alloc_lfile(ctx, fd, -1);
-        Lf->dev_def = Lf->inode_def = Lf->nlink_def = 1;
+        alloc_lfile(ctx, LSOF_FD_LIBRARY_REF, i++);
+        Lf->dev_def = Lf->inp_ty = Lf->nlink_def = 1;
         Lf->dev = sb.st_dev;
         Lf->inode = (INODETYPE)sb.st_ino;
         Lf->type = LSOF_FILE_VNODE_VREG;

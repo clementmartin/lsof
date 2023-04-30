@@ -107,7 +107,6 @@ static void process_fileports(struct lsof_context *ctx, int pid, int ckscko);
 /*
  * enter_vn_text() -- enter vnode information text reference
  */
-
 static void enter_vn_text(struct lsof_context *ctx,    /* context */
                           struct vnode_info_path *vip, /* vnode info */
                           int *n) /* number of vips[] entries in use */
@@ -164,7 +163,6 @@ static void enter_vn_text(struct lsof_context *ctx,    /* context */
 /*
  * gather_proc_info() -- gather process information
  */
-
 void gather_proc_info(struct lsof_context *ctx) {
     short cckreg; /* conditional status of regular file
                    * checking:
@@ -397,7 +395,7 @@ void gather_proc_info(struct lsof_context *ctx) {
                      */
                     if (cre != ESRCH) {
                         (void)snpf(Namech, Namechl, "%s|%s info error: %s",
-                                   &CWD[1], &RTD[1], strerror(cre));
+                                   CWD +1, RTD + 1, strerror(cre));
                         Namech[Namechl - 1] = '\0';
                         enter_nm(ctx, Namech);
                         if (Lf->sf)

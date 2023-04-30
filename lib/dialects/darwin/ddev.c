@@ -502,7 +502,6 @@ static int rmdupdev(struct lsof_context *ctx, /* context */
 /*
  * saveADev() - save additional device number appearing inside DDEV_DEVPATH
  */
-
 static void saveADev(struct lsof_context *ctx, /* context */
                      struct stat *s)           /* stat(2) buffer for file */
 {

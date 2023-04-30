@@ -155,9 +155,9 @@ enum lsof_lock_mode isglocked(struct lsof_context *ctx, /* context */
         switch (f.set.l_type & (F_RDLCK | F_WRLCK)) {
 
         case F_RDLCK:
-            return (l) ? LSOF_LOCK_READ_FULL : LSOF_LOCK_READ_PARTIAL;
+            return l ? LSOF_LOCK_READ_FULL : LSOF_LOCK_READ_PARTIAL;
         case F_WRLCK:
-            return (l) ? LSOF_LOCK_WRITE_FULL : LSOF_LOCK_WRITE_PARTIAL;
+            return l ? LSOF_LOCK_WRITE_FULL : LSOF_LOCK_WRITE_PARTIAL;
         case (F_RDLCK + F_WRLCK):
             return LSOF_LOCK_READ_WRITE;
         }
@@ -165,7 +165,7 @@ enum lsof_lock_mode isglocked(struct lsof_context *ctx, /* context */
 
 #if AIXV >= 4140
     } while ((cfp = f.FL_NEXT) && cfp != ffp);
-    return (LSOF_LOCK_NONE);
+    return LSOF_LOCK_NONE;
 #endif /* AIXV>=4140 */
 }
 
@@ -187,7 +187,6 @@ void process_node(struct lsof_context *ctx, /* context */
     int rdevs = 0;
     size_t sz;
     char tbuf[32];
-    enum lsof_file_type ty;
     enum vtype type;
     struct l_vfs *vfs;
     static struct vnode *v = (struct vnode *)NULL;
@@ -1015,7 +1014,7 @@ void process_node(struct lsof_context *ctx, /* context */
     switch (type) {
 
     case VNON:
-        ty = LSOF_FILE_VNODE_VNON;
+        Lf->type = LSOF_FILE_VNODE_VNON;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
@@ -1023,14 +1022,14 @@ void process_node(struct lsof_context *ctx, /* context */
         break;
     case VREG:
     case VDIR:
-        ty = (type == VREG) ? LSOF_FILE_VNODE_VREG : LSOF_FILE_VNODE_VDIR;
+        Lf->type = (type == VREG) ? LSOF_FILE_VNODE_VREG : LSOF_FILE_VNODE_VDIR;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
         Lf->rdev_def = rdevs;
         break;
     case VBLK:
-        ty = LSOF_FILE_VNODE_VBLK;
+        Lf->type = LSOF_FILE_VNODE_VBLK;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
@@ -1038,7 +1037,7 @@ void process_node(struct lsof_context *ctx, /* context */
         Ntype = N_BLK;
         break;
     case VCHR:
-        ty = LSOF_FILE_VNODE_VCHR;
+        Lf->type = LSOF_FILE_VNODE_VCHR;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
@@ -1046,7 +1045,7 @@ void process_node(struct lsof_context *ctx, /* context */
         Ntype = N_CHR;
         break;
     case VLNK:
-        ty = LSOF_FILE_VNODE_VLNK;
+        Lf->type = LSOF_FILE_VNODE_VLNK;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
@@ -1055,7 +1054,7 @@ void process_node(struct lsof_context *ctx, /* context */
 
 #if defined(VSOCK)
     case VSOCK:
-        ty = LSOF_FILE_VNODE_VSOCK;
+        Lf->type = LSOF_FILE_VNODE_VSOCK;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
@@ -1064,7 +1063,7 @@ void process_node(struct lsof_context *ctx, /* context */
 #endif
 
     case VBAD:
-        ty = LSOF_FILE_VNODE_VBAD;
+        Lf->type = LSOF_FILE_VNODE_VBAD;
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
@@ -1077,7 +1076,7 @@ void process_node(struct lsof_context *ctx, /* context */
             Lf->rdev = rdev;
             Lf->rdev_def = rdevs;
         }
-        ty = LSOF_FILE_VNODE_VFIFO;
+        Lf->type = LSOF_FILE_VNODE_VFIFO;
         break;
     case VMPC:
         Lf->rdev = g.gn_rdev;
@@ -1093,14 +1092,14 @@ void process_node(struct lsof_context *ctx, /* context */
 #endif /* AIXV<3200 */
 
         Ntype = N_CHR;
-        ty = LSOF_FILE_VNODE_VMPC;
+        Lf->type = LSOF_FILE_VNODE_VMPC;
         break;
     default:
         Lf->dev = dev;
         Lf->dev_def = devs;
         Lf->rdev = rdev;
         Lf->rdev_def = rdevs;
-        Lf->type = LSOF_FILE_UNKNOWN;
+        Lf->type = LSOF_FILE_UNKNOWN_RAW;
         Lf->unknown_file_type_number = type;
     }
 
@@ -1159,7 +1158,7 @@ void process_shmt(struct lsof_context *ctx, /* context */
         return;
     }
     /*
-     * Set type to SMT and put shmtnode structure address in device column.
+     * Set type to " SMT" and put shmtnode structure address in device column.
      */
     Lf->type = LSOF_FILE_SHARED_MEM_TRANSPORT;
     if (!sa || kread((KA_T)sa, (char *)&mn, sizeof(mn))) {
