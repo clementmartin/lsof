@@ -144,30 +144,25 @@ enum lsof_file_type {
     LSOF_FILE_ICMP,              /**< icmp socket */
 
     /* procfs */
-    LSOF_FILE_PROC_AS,       /**< Solaris /proc/<PID>/as file */
-    LSOF_FILE_PROC_AUXV,     /**< /proc/<PID>/auxv file */
-    LSOF_FILE_PROC_CRED,     /**< Solaris /proc/<PID>/cred file */
-    LSOF_FILE_PROC_CTRL,     /**< /proc/<PID>/ctl control file */
-    LSOF_FILE_PROC_CUR_PROC, /**< NetBSD /proc/curproc file */
-    LSOF_FILE_PROC_CWD, /**< Solaris /proc/<PID>/cwd current working directory
-                         */
-    LSOF_FILE_PROC_DIR, /**< /proc directory */
-    LSOF_FILE_PROC_PID, /**< /proc/<PID> directory */
-    LSOF_FILE_PROC_EXEC_TYPE, /**< FreeBSD /proc executable type (etype) */
-    LSOF_FILE_PROC_FD,        /**< /proc/<PID>/fd/<FD> file */
-    LSOF_FILE_PROC_FD_DIR,    /**< /proc/<PID>/fd directory */
-    LSOF_FILE_PROC_FILE,      /**< /proc/<PID>/file executable file */
-    LSOF_FILE_PROC_FP_REGS, /**< /proc/<PID>/fpregs floating point register set
-                             */
+    LSOF_FILE_PROC_AS,             /**< Solaris /proc/<PID>/as file */
+    LSOF_FILE_PROC_AUXV,           /**< /proc/<PID>/auxv file */
+    LSOF_FILE_PROC_CRED,           /**< Solaris /proc/<PID>/cred file */
+    LSOF_FILE_PROC_CTRL,           /**< /proc/<PID>/ctl control file */
+    LSOF_FILE_PROC_CUR_PROC,       /**< NetBSD /proc/curproc file */
+    LSOF_FILE_PROC_CWD,            /**< Solaris /proc/<PID>/cwd folder */
+    LSOF_FILE_PROC_DIR,            /**< /proc directory */
+    LSOF_FILE_PROC_EXEC_TYPE,      /**< FreeBSD /proc executable type (etype) */
+    LSOF_FILE_PROC_FD,             /**< /proc/<PID>/fd/<FD> file */
+    LSOF_FILE_PROC_FD_DIR,         /**< /proc/<PID>/fd directory */
+    LSOF_FILE_PROC_FILE,           /**< /proc/<PID>/file executable file */
+    LSOF_FILE_PROC_FP_REGS,        /**< /proc/<PID>/fpregs fp registers */
     LSOF_FILE_PROC_PAGE_DATA,      /**< Solaris /proc/<PID>/pagedata file */
-    LSOF_FILE_PROC_GROUP_NOTIFIER, /**< /proc/<PID>/notepg group notifier file
-                                    */
+    LSOF_FILE_PROC_GROUP_NOTIFIER, /**< /proc/<PID>/notepg group notifier */
     LSOF_FILE_PROC_LDT,            /**< Solaris /proc/<PID>/ldt file */
     LSOF_FILE_PROC_LPS_INFO,       /**< Solaris /proc/<PID>/lpsinfo file */
     LSOF_FILE_PROC_LSTATUS,        /**< Solaris /proc/<PID>/lstatus file */
     LSOF_FILE_PROC_LUSAGE,         /**< Solaris /proc/<PID>/lusage file */
     LSOF_FILE_PROC_LWP_GWINDOWS,   /**< Solaris /proc/<PID>/lwp/<LWPID>/gwindows
-                                    * file
                                     */
     LSOF_FILE_PROC_LWP_CTL, /**< Solaris /proc/<PID>/lwp/<LWPID>/lwpctl file */
     LSOF_FILE_PROC_LWP_DIR, /**< Solaris /proc/<PID>/lwp or
@@ -187,17 +182,16 @@ enum lsof_file_type {
     LSOF_FILE_PROC_OBJ_DIR,       /**< Solaris /proc/<PID>/object directory */
     LSOF_FILE_PROC_OLD_LWP,       /**< Solaris old format /proc/<LWPID> file */
     LSOF_FILE_PROC_OLD_PID,       /**< Solaris old format /proc/<PID> file */
-    LSOF_FILE_PROC_OLD_PAGE, /**< Solaris old format /proc/<PID> page data file
-                              */
-    LSOF_FILE_PROC_REGS,     /**< /proc/<PID>/regs register set */
-    LSOF_FILE_PROC_RMAP,     /**< Solaris /proc/<PID>/rmap file */
-    LSOF_FILE_PROC_ROOT,     /**< Solaris /proc/<PID>/root root directory */
-    LSOF_FILE_PROC_SIGACT,   /**< Solaris /proc/<PID>/sigact file */
-    LSOF_FILE_PROC_PSINFO,   /**< Solaris /proc/<PID>/psinfo file */
-    LSOF_FILE_PROC_STATUS,   /**< /proc/<PID>/status status file */
-    LSOF_FILE_PROC_USAGE,    /**< Solaris /proc/<PID>/usage file */
-    LSOF_FILE_PROC_WATCH,    /**< Solaris /proc/<PID>/watch file */
-    LSOF_FILE_PROC_XMAP,     /**< Solaris /proc/<PID>/xmap file */
+    LSOF_FILE_PROC_OLD_PAGE,      /**< Solaris old /proc/<PID> page data file */
+    LSOF_FILE_PROC_REGS,          /**< /proc/<PID>/regs register set */
+    LSOF_FILE_PROC_RMAP,          /**< Solaris /proc/<PID>/rmap file */
+    LSOF_FILE_PROC_ROOT,          /**< Solaris /proc/<PID>/root directory */
+    LSOF_FILE_PROC_SIGACT,        /**< Solaris /proc/<PID>/sigact file */
+    LSOF_FILE_PROC_PSINFO,        /**< Solaris /proc/<PID>/psinfo file */
+    LSOF_FILE_PROC_STATUS,        /**< /proc/<PID>/status status file */
+    LSOF_FILE_PROC_USAGE,         /**< Solaris /proc/<PID>/usage file */
+    LSOF_FILE_PROC_WATCH,         /**< Solaris /proc/<PID>/watch file */
+    LSOF_FILE_PROC_XMAP,          /**< Solaris /proc/<PID>/xmap file */
 
     /* Others */
     LSOF_FILE_ANON_INODE,        /**< anonymous inode */
@@ -208,21 +202,24 @@ enum lsof_file_type {
     LSOF_FILE_EVENTFD,           /**< eventfd file */
     LSOF_FILE_PROCDESC,          /**< process descriptor file */
     LSOF_FILE_MULTIPLEXED_BLOCK, /**< SCO OpenServer multiplexed block file */
-    LSOF_FILE_MULTIPLEXED_CHAR,  /**< SCO OpenServer multiplexed character file
-                                  */
+    LSOF_FILE_MULTIPLEXED_CHAR,  /**< SCO OpenServer multiplexed char file */
     LSOF_FILE_UNKNOWN_DELETED,   /**< Linux unknown deleted file */
     LSOF_FILE_UNKNOWN_MEMORY,    /**< Linux unknown memory file */
     LSOF_FILE_UNKNOWN_FD,        /**< Linux unknown fd */
     LSOF_FILE_UNKNOWN_CWD,       /**< Linux unknown cwd */
     LSOF_FILE_UNKNOWN_ROOT_DIR,  /**< Linux unknown root dir */
     LSOF_FILE_UNKNOWN_PROGRAM_TEXT, /**< Linux unknown program text */
-    LSOF_FILE_PIPE,                 /**< pipes */
-    LSOF_FILE_PORT,                 /**< Solaris SYSV named pipe */
-    LSOF_FILE_POSIX_MQ,             /**< POSIX named message queue file */
-    LSOF_FILE_POSIX_SEMA,           /**< POSIX named semaphore file */
-    LSOF_FILE_POSIX_SHM,            /**< POSIX named shared memory file */
-    LSOF_FILE_SHM,                  /**< SystemV shared memory file */
-    LSOF_FILE_PTS,                  /**< FreeBSD /dev/pts file */
+    LSOF_FILE_UNKNOWN_STAT,         /**< Linux unknown due to failed stat() */
+    LSOF_FILE_UNKNOWN_RAW, /**< Unknown file type, raw numbers provided in
+                              unknown_file_type_number */
+    LSOF_FILE_UNKNOWN,     /**< Unknown file type without raw number */
+    LSOF_FILE_PIPE,        /**< pipes */
+    LSOF_FILE_PORT,        /**< Solaris SYSV named pipe */
+    LSOF_FILE_POSIX_MQ,    /**< POSIX named message queue file */
+    LSOF_FILE_POSIX_SEMA,  /**< POSIX named semaphore file */
+    LSOF_FILE_POSIX_SHM,   /**< POSIX named shared memory file */
+    LSOF_FILE_SHM,         /**< SystemV shared memory file */
+    LSOF_FILE_PTS,         /**< FreeBSD /dev/pts file */
     LSOF_FILE_SHARED_MEM_TRANSPORT, /**< AIX Shared memory transport file */
     LSOF_FILE_STREAM,               /**< HP-UX streams */
     LSOF_FILE_STREAM_SOCKET,        /**< HP-UX stream socket */
@@ -237,18 +234,16 @@ enum lsof_file_type {
     LSOF_FILE_VNODE_VREG,  /**< The vnode represents a regular file */
     LSOF_FILE_VNODE_VDIR,  /**< The vnode represents a directory */
     LSOF_FILE_VNODE_VBLK,  /**< The vnode represents a block special device */
-    LSOF_FILE_VNODE_VCHR,  /**< The vnode represents a character special device
-                            */
+    LSOF_FILE_VNODE_VCHR,  /**< The vnode represents a char special device */
     LSOF_FILE_VNODE_VLNK,  /**< The vnode represents a symbolic link */
     LSOF_FILE_VNODE_VSOCK, /**< The vnode represents a socket */
-    LSOF_FILE_VNODE_VFIFO, /**< The vnode represents a pipe */
     LSOF_FILE_VNODE_VBAD,  /**< The vnode represents a bad file */
     LSOF_FILE_VNODE_VMPC,  /**< The vnode represents a multiplexed character
                               special device */
+    LSOF_FILE_VNODE_VFIFO, /**< The vnode represents a FIFO file */
     LSOF_FILE_VNODE_VUNNAMED, /**< The vnode represents an unnamed file */
-
-    /* Unknown, see unknown_file_type_number for raw value */
-    LSOF_FILE_UNKNOWN, /**< Unknown file type, only raw numbers provided */
+    LSOF_FILE_VNODE_VDOOR,    /**< The vnode represents a door */
+    LSOF_FILE_VNODE_VPORT,    /**< The vnode represents a port */
 };
 
 /** Network protocol */
