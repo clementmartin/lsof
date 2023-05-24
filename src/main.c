@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
         Pn++;
     else
         Pn = argv[0];
-    lsof_output_stream(ctx, stderr, Pn, 0);
+    lsof_set_output_stream(ctx, stderr, Pn, 0);
 
     /*
      * Close enough file descriptors above 2 that library functions will have

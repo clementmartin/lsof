@@ -1,5 +1,5 @@
 /** @file
- * common.h - header file for lsof
+ * lsof.h - header file for lsof
  */
 
 /*
@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: common.h,v 1.70 2018/03/26 21:50:45 abe Exp $
+ * $Id: lsof.h,v 1.70 2018/03/26 21:50:45 abe Exp $
  */
 
 #if !defined(LSOF_H)
@@ -726,7 +726,7 @@ struct lsof_context *lsof_new();
  *
  * \since API version 1
  */
-enum lsof_error lsof_output_stream(struct lsof_context *ctx, FILE *fp,
+enum lsof_error lsof_set_output_stream(struct lsof_context *ctx, FILE *fp,
                                    char *program_name, int warn);
 
 /** Exit program upon fatal error

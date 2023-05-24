@@ -638,7 +638,7 @@ enum lsof_error lsof_gather(struct lsof_context *ctx,
 }
 
 API_EXPORT
-enum lsof_error lsof_output_stream(struct lsof_context *ctx, FILE *fp,
+enum lsof_error lsof_set_output_stream(struct lsof_context *ctx, FILE *fp,
                                    char *program_name, int warn) {
     if (!ctx) {
         return LSOF_ERROR_INVALID_ARGUMENT;
