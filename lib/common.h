@@ -695,8 +695,8 @@ extern int NcacheReload;
 #    include "lsof.h"
 
 struct fd_lst {
-    enum lsof_fd_type fd_type; /* file descriptor type -- range if
-                                * LSOF_FD_NUMERIC */
+    enum lsof_fd_type fd_type; /* file descriptor type;
+                                * range if LSOF_FD_NUMERIC */
     int lo;                    /* range start (if nm NULL) */
     int hi;                    /* range end (if nm NULL) */
     struct fd_lst *next;
@@ -765,8 +765,10 @@ struct lfile {
 
     /* FD column */
     enum lsof_fd_type fd_type;
-    int fd_num; /* stores fd number when fd_type == LSOF_FD_NUMERIC, otherwise
-                   -1 */
+    int fd_num; /* stores fd number when fd_type is LSOF_FD_NUMERIC,
+                   stores raw number when fd_type is one of
+                   {LSOF_FD_LIBRARY_REF, LSOF_FD_MMAP_UNKNOWN,
+                   LSOF_FD_PREGION_UNKNOWN}, otherwise -1 */
 
     enum lsof_protocol iproto;
     uint32_t unknown_proto_number; /* store proto number when iproto ==
@@ -954,8 +956,6 @@ struct procfsid {
 #    endif /* defined(HASPROCFS) */
 
 extern int PrPass;
-extern int Setgid;
-extern int Setuidroot;
 extern char *SzOffFmt_0t;
 extern char *SzOffFmt_d;
 extern char *SzOffFmt_dv;
@@ -1169,12 +1169,12 @@ struct lsof_context {
      * when it's >= 0 */
     char *dev_cache_paths[4];
     int dev_cache_path_index;    /* device cache path index:
-                                  *	-1 = path not defined
-                                  *	 0 = defined via -D
-                                  *	 1 = defined via HASENVDC
-                                  *	 2 = defined via HASSYSDC
-                                  *	 3 = defined via HASPERSDC and
-                                  *	     HASPERSDCPATH */
+                                  * -1 = path not defined
+                                  *  0 = defined via -D
+                                  *  1 = defined via HASENVDC
+                                  *  2 = defined via HASSYSDC
+                                  *  3 = defined via HASPERSDC and
+                                  *      HASPERSDCPATH */
     char *dev_cache_path_arg;    /* device cache path from -D[b|r|u]<path> */
     unsigned dev_cache_checksum; /* device cache file checksum */
     int dev_cache_fd;            /* device cache file descriptor */
@@ -1182,11 +1182,11 @@ struct lsof_context {
     int dev_cache_rebuilt;       /* an unsafe device cache file has been
                                   * rebuilt */
     int dev_cache_state;         /* device cache state:
-                                  *	0 = ignore (-Di)
-                                  *	1 = build (-Db[path])
-                                  *	2 = read; don't rebuild (-Dr[path])
-                                  *	3 = update; read and rebuild if
-                                  *	    necessary (-Du[path])
+                                  * 0 = ignore (-Di)
+                                  * 1 = build (-Db[path])
+                                  * 2 = read; don't rebuild (-Dr[path])
+                                  * 3 = update; read and rebuild if
+                                  *     necessary (-Du[path])
                                   */
     int dev_cache_unsafe;        /* device cache file is potentially unsafe,
                                   * (The [cm]time check failed.) */
@@ -1228,7 +1228,7 @@ struct lsof_context {
     struct lproc *cur_proc;
     /** Pointer to all processes */
     struct lproc *procs;
-    /** length and capacity of `proc` */
+    /** Length and capacity of `procs` */
     size_t procs_size;
     size_t procs_cap;
 
@@ -1240,7 +1240,7 @@ struct lsof_context {
     /** Warnings and errors */
     FILE *err;
     char *program_name;
-    int warn;
+    int warn; /* 1=suppress warnings */
 
     /** dialect specific fields, see dlsof.h */
     struct lsof_context_dialect dialect;
@@ -1421,8 +1421,7 @@ struct lsof_context {
 /* Utility macro to free if non-null and set the pointer to null */
 #    define CLEAN(ptr)                                                         \
         do {                                                                   \
-            if ((ptr))                                                         \
-                free(ptr);                                                     \
+            free(ptr);                                                         \
             ptr = NULL;                                                        \
         } while (0);
 
