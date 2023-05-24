@@ -1,5 +1,5 @@
 /** @file
- * lsof.h - header file for lsof
+ * common.h - header file for lsof
  */
 
 /*

@@ -252,8 +252,8 @@ struct l_dev {
 #    include "dlsof.h"
 
 #    include <sys/types.h> /* just in case -- because utmp.h
-					 * may need it */
-#    include "./regex.h"
+                     * may need it */
+#    include <egex.h>
 
 #    if defined(EMPTY)
 #        undef EMPTY
@@ -1050,8 +1050,8 @@ struct lsof_context {
 
     /* command names selected with -c */
     struct str_lst *sel_cmds;
-    int sel_cmd_incl;   /* number of command name inclusions selected with -c */
-    int sel_cmd_excl;   /* number of command name exclusions selected with -c */
+    int sel_cmd_incl; /* number of command name inclusions selected with -c */
+    int sel_cmd_excl; /* number of command name exclusions selected with -c */
 
     int time_limit; /* Readlink() and stat() timeout (seconds) */
 
