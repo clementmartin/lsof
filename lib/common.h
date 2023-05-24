@@ -252,8 +252,8 @@ struct l_dev {
 #    include "dlsof.h"
 
 #    include <sys/types.h> /* just in case -- because utmp.h
-                     * may need it */
-#    include <egex.h>
+                            * may need it */
+#    include <regex.h>
 
 #    if defined(EMPTY)
 #        undef EMPTY
